@@ -9,7 +9,7 @@ def random_password():
     password_entry.delete(0, END)  # delete previous value
     password_entry.insert(END, generate_password())
 
-
+# --------------------------- SAVE PASSWORD ----------------------------------------------------------- #
 def save_password():
     website_name = website_entry.get()
     email_address = Email_entry.get()
@@ -17,8 +17,8 @@ def save_password():
     #  Data in json format
     new_data = {
         website_name: {
-           "email": email_address,
-           "password": password
+            "email": email_address,
+            "password": password
         }
     }
 
@@ -58,7 +58,26 @@ def save_password():
                 website_entry.focus()
 
 
-# --------------------------- SETUP THE UI ------------------------- #
+# -------------------------- GET PASSWORD ------------------------------------------------------------- #
+
+
+def get_password():
+    website_search = website_entry.get()
+    try:
+        with open("./passwords.json", mode="r") as file:
+            data = json.load(file)  # load data as dictionary.
+    except FileNotFoundError:
+        tkinter.messagebox.showerror(message="No Data File Found.")
+    else:
+        if website_search in data:
+            msg = f"Email: {data[website_search]['email']} \n Password: {data[website_search]['password']}"
+            tkinter.messagebox.showinfo(title=f"{website_search}", message=msg)
+            pyperclip.copy(data[website_search]['password'])
+        else:
+            tkinter.messagebox.showerror(title=f"{website_search}", message=f"{website_search} has no record.")
+
+
+# --------------------------- SETUP THE UI ----------------------------------------------------------- #
 
 # configure the window screen
 window = Tk()
@@ -74,9 +93,12 @@ canvas.grid(row=0, column=1)
 website_label = Label(padx=20, text="Website:", highlightthickness=0)
 website_label.grid(row=1, column=0, pady=3)
 
-website_entry = Entry(width=50)
+website_entry = Entry(width=30)
 website_entry.focus()
-website_entry.grid(row=1, column=1, pady=3)
+website_entry.grid(row=1, column=1, pady=3, padx=22, sticky=W)
+
+search_button = Button(width=15, text="Search", padx=5, command=get_password)
+search_button.grid(row=1, column=1, sticky=E, padx=22)
 
 Email_label = Label(padx=20, text="Email/Username:", highlightthickness=0)
 Email_label.grid(row=2, column=0, pady=3)
